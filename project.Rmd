@@ -1,0 +1,88 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Statistical Inference Project 
+
+## Overview
+This project investigates the Exponential distribution in R and compares it with the Central Limit Theorem. The mean of the Exponential distribution is $\frac{1}{\lambda}$ and the standard deviation is also $\frac{1}{\lambda}$. A thousand simulations of the distribution of 40 exponentials would be investigated.
+
+## Simulation
+The exponential distribution can be simulated in R with rexp(n, lambda), where lambda is the rate parameter and n is the number of observations. For the purpose of all the simulations in this project, value of lambda is set to 0.2.
+First we load the ggplot2 plotting library.
+
+```{r}
+library(ggplot2)
+```
+
+Then we will initialize the variables
+
+```{r}
+lamb <- 0.2
+n <- 1000
+sampsize <- 40
+```
+
+set seed for random variable
+
+```{r}
+set.seed(3)
+```
+
+create a matrix with 1000 rows and 40 column
+
+```{r}
+sampledMatrix <- matrix(rexp(sampsize*n , lamb) ,n, sampsize)
+```
+
+We find the means for each simulation
+
+```{r}
+means <- apply(sampledMatrix,1,mean)
+```
+
+
+calculate the simulated data
+
+```{r}
+sampleData <- data.frame(cbind(sampledMatrix,means))
+```
+
+plot the simulated means data
+
+```{r}
+ggplot(data = sampleData , aes(means)) + geom_histogram(aes(fill=..count..) , bins = round(sqrt(1000),1)) + geom_vline(xintercept = mean(means))
+```
+
+```{r}
+actualMean <- mean(sampleData$means)
+theoreticalMean <- 1/lamb
+```
+
+The Actual Mean is `r actualMean`
+
+The Theoretical Mean is `r theoreticalMean`
+
+```{r}
+ggplot(data = sampleData , aes(means)) + geom_histogram(aes(y = ..density.. ,fill=..count.. , bins = sqrt(length(means)))) + geom_density(aes(y=..density.., colour='Empirical'), size=1)
+```
+
+as we see it is nearly normal
+
+```{r}
+actualVariance <- var(means)
+theoreticalVariance <-( (1/lamb)^2)/40
+```
+
+the actual Variance is `r actualVariance`
+
+the theoretical Variance is `r theoreticalVariance`
+
+```{r}
+actualConf <- actualMean +c(-1,1)*qnorm(0.95)*sqrt(actualVariance)
+theoreticalConf <- theoreticalMean + c(-1,1)*qnorm(0.95)*sqrt(theoreticalVariance)
+```
+
+
+the actual 95% Conf is `r actualConf` and the theoretical conf is `r theoreticalConf` 

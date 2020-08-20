@@ -1,0 +1,60 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Statistical Inference Project Part 2 - Basic Inferential Data Analysis On ToothGrowth
+
+loading library
+```{r}
+library(ggplot2)
+library(datasets)
+data(ToothGrowth)
+str(ToothGrowth)
+summary(ToothGrowth)
+```
+
+Plotting length vs dose boxplots for different supp
+
+```{r}
+ggplot(data = ToothGrowth , aes(x = as.factor(dose),y = len)) + geom_boxplot(aes(fill= dose)) + facet_grid(.~supp)
+```
+
+
+length vs supplementary
+
+```{r}
+ggplot(data = ToothGrowth , aes(x = as.factor(supp),y = len)) + geom_boxplot(aes(fill= supp)) + facet_grid(.~dose)
+```
+
+###T test to compare length for different supplements
+```{r}
+t.test(len~supp,data = ToothGrowth)
+```
+
+Since the p value is greater then 0.05 , we can say that the null hypothesis is true
+
+###t test to compare length for different doses
+
+comparing 1.0 and 2.0
+
+```{r}
+subsett <- ToothGrowth[ToothGrowth$dose %in% c(1.0,2.0),]
+t.test(len~as.factor(dose),data = subsett)
+```
+
+comparing 1.0 and 0.5
+
+```{r}
+subsett <- ToothGrowth[ToothGrowth$dose %in% c(1.0,0.5),]
+t.test(len~as.factor(dose),data = subsett)
+```
+comparing 2.0 and 0.5
+
+```{r}
+subsett <- ToothGrowth[ToothGrowth$dose %in% c(2.0,0.5),]
+t.test(len~as.factor(dose),data = subsett)
+```
+
+for all the cases the p values is nearly zero . Therefore the null hypothesis can be rejected . 
+Hence tooth length increases with an increase in the dose
