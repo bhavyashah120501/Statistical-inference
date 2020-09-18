@@ -1,0 +1,65 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+# Quantitative Analysis Of Human Activity Record
+
+
+
+## Getting Data
+```{r}
+dtrain <- read.csv("train.csv")
+dtest <- read.csv("test.csv")
+```
+
+## Cleaning Data
+
+### remove those columns which have missing values greater then 0.9
+```{r}
+a=which(sapply(dtrain,function(x){ sum(is.na(x)) > 0.9 }))
+dtrain = dtrain[,-a]
+dtest = dtest[,-a]
+```
+
+### remove those columns which have no value in them
+```{r}
+b = which(sapply(dtrain,function(x){mean(x == "") > 0.9}))
+dtrain = dtrain[,-b]
+dtest = dtest[,-b]
+```
+
+### removing first 6 variables
+```{r}
+dtrain = dtrain[,7:dim(dtrain)[2]]
+dtest = dtest[,7:dim(dtest)[2]]
+```
+
+### factor conversino
+
+```{r}
+dtrain$classe = as.factor(dtrain$classe)
+```
+
+### Data Splitting
+```{r}
+library(caret)
+library(caret)
+train = createDataPartition(dtrain$classe,p = 0.6)
+training = dtrain[train$Resample1,]
+testing = dtrain[-train$Resample1,]
+```
+
+### Model Selection
+```{r}
+library(randomForest)
+rf = randomForest(classe~.,testing)
+confusionMatrix(testing$classe,predict(rf,testing[,-dim(testing)[2]]))
+```
+### Prediction
+```{r}
+predict(rf,dtrain)
+```
+
+### Conclusion
+Random Forest has been used.
